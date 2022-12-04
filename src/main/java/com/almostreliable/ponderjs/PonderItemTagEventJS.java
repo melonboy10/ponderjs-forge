@@ -16,22 +16,22 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class PonderItemTagEventJS extends EventJS {
-    public void createTag(String id, ItemStackJS displayItem, String title, String description, IngredientJS ingredient) {
+    public void createTag(String id, ItemStackJS displayItem, String title, String description, boolean useAsMainItem, IngredientJS ingredient) {
         PonderJS.getTagByName(id).ifPresent(tag -> {
             throw new IllegalArgumentException("Tag " + id + " already exists");
         });
 
         ResourceLocation idWithNamespace = PonderJS.appendKubeToId(id);
         PonderTag ponderTag = new PonderTag(idWithNamespace)
-                .item(displayItem.getItem())
+                .item(displayItem.getItem(), true, useAsMainItem)
                 .defaultLang(title, description);
         PonderRegistry.TAGS.listTag(ponderTag);
         add(ponderTag, ingredient);
         PonderJS.NAMESPACES.add(idWithNamespace.getNamespace());
     }
 
-    public void createTag(String id, ItemStackJS displayItem, String title, String description) {
-        createTag(id, displayItem, title, description, ItemStackJS.EMPTY);
+    public void createTag(String id, ItemStackJS displayItem, String title, String description, boolean useAsMainItem) {
+        createTag(id, displayItem, title, description, useAsMainItem, ItemStackJS.EMPTY);
     }
 
     public void removeTag(PonderTag... tags) {
